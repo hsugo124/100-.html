@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>100词极速背单词</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f2f6ff;
+text-align:center;
+padding:15px;
+}
+
+.box{
+background:white;
+border-radius:20px;
+padding:20px;
+box-shadow:0 5px 15px #ccc;
+}
+
+.word{
+font-size:42px;
+font-weight:bold;
+color:#1976d2;
+margin:20px;
+}
+
+.phonetic{
+font-size:22px;
+color:#666;
+}
+
+button{
+width:90%;
+padding:14px;
+margin:8px;
+border:0;
+border-radius:15px;
+font-size:18px;
+background:#4caf50;
+color:white;
+}
+
+.blue{
+background:#2196f3;
+}
+
+.red{
+background:#e53935;
+}
+
+.yellow{
+background:#ff9800;
+}
+
+#msg{
+font-size:22px;
+height:40px;
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="box">
+
+<h2>🚀 极速背单词</h2>
+
+<p>
+得分：
+<span id="score">0</span>
+　
+连击：
+<span id="combo">0</span>
+</p>
+
+
+<p>
+第 <span id="num">1</span> 题
+</p>
+
+
+<div class="word" id="word"></div>
+
+<div class="phonetic" id="phonetic"></div>
+
+
+<button class="blue" onclick="voice()">🔊 发音</button>
+
+
+<div id="options"></div>
+
+
+<div id="msg"></div>
+
+
+<button onclick="remember('认识')">
+🟢认识
+</button>
+
+<button class="yellow" onclick="remember('模糊')">
+🟡模糊
+</button>
+
+<button class="red" onclick="remember('不会')">
+🔴不会
+</button>
+
+
+</div>
+
+
+
+<script>
+
+
+let words=[
+
+["apple","/ˈæpəl/","苹果"],
+["banana","/bəˈnænə/","香蕉"],
+["book","/bʊk/","书"],
+["computer","/kəmˈpjuːtər/","电脑"],
+["teacher","/ˈtiːtʃər/","老师"],
+["student","/ˈstuːdnt/","学生"],
+["school","/skuːl/","学校"],
+["family","/ˈfæməli/","家庭"],
+["friend","/frend/","朋友"],
+["water","/ˈwɔːtər/","水"],
+
+["car","/kɑːr/","汽车"],
+["bus","/bʌs/","公交车"],
+["train","/treɪn/","火车"],
+["plane","/pleɪn/","飞机"],
+["house","/haʊs/","房子"],
+["door","/dɔːr/","门"],
+["window","/ˈwɪndoʊ/","窗户"],
+["table","/ˈteɪbl/","桌子"],
+["chair","/tʃer/","椅子"],
+["bed","/bed/","床"],
+
+["dog","/dɔːɡ/","狗"],
+["cat","/kæt/","猫"],
+["bird","/bɜːrd/","鸟"],
+["fish","/fɪʃ/","鱼"],
+["flower","/ˈflaʊər/","花"],
+["tree","/triː/","树"],
+["sun","/sʌn/","太阳"],
+["moon","/muːn/","月亮"],
+["star","/stɑːr/","星星"],
+["sky","/skaɪ/","天空"],
+
+["happy","/ˈhæpi/","开心"],
+["sad","/sæd/","难过"],
+["big","/bɪɡ/","大的"],
+["small","/smɔːl/","小的"],
+["fast","/fæst/","快"],
+["slow","/sloʊ/","慢"],
+["hot","/hɑːt/","热"],
+["cold","/koʊld/","冷"],
+["new","/nuː/","新的"],
+["old","/oʊld/","旧的"],
+
+["eat","/iːt/","吃"],
+["drink","/drɪŋk/","喝"],
+["sleep","/sliːp/","睡觉"],
+["run","/rʌn/","跑"],
+["walk","/wɔːk/","走"],
+["jump","/dʒʌmp/","跳"],
+["read","/riːd/","读"],
+["write","/raɪt/","写"],
+["listen","/ˈlɪsn/","听"],
+["speak","/spiːk/","说"],
+
+["look","/lʊk/","看"],
+["see","/siː/","看见"],
+["make","/meɪk/","制作"],
+["go","/ɡoʊ/","去"],
+["come","/kʌm/","来"],
+["give","/ɡɪv/","给"],
+["take","/teɪk/","拿"],
+["buy","/baɪ/","买"],
+["sell","/sel/","卖"],
+["open","/ˈoʊpən/","打开"],
+
+["close","/kloʊz/","关闭"],
+["start","/stɑːrt/","开始"],
+["finish","/ˈfɪnɪʃ/","完成"],
+["love","/lʌv/","爱"],
+["like","/laɪk/","喜欢"],
+["know","/noʊ/","知道"],
+["think","/θɪŋk/","想"],
+["learn","/lɜːrn/","学习"],
+["work","/wɜːrk/","工作"],
+["play","/pleɪ/","玩"],
+
+["game","/ɡeɪm/","游戏"],
+["money","/ˈmʌni/","钱"],
+["time","/taɪm/","时间"],
+["day","/deɪ/","天"],
+["night","/naɪt/","夜晚"],
+["morning","/ˈmɔːrnɪŋ/","早晨"],
+["food","/fuːd/","食物"],
+["milk","/mɪlk/","牛奶"],
+["orange","/ˈɔːrɪndʒ/","橙子"],
+["bread","/bred/","面包"]
+
+];
+
+
+let index=0;
+let score=0;
+let combo=0;
+
+
+function load(){
+
+let w=words[index];
+
+word.innerHTML=w[0];
+phonetic.innerHTML=w[1];
+
+num.innerHTML=index+1;
+
+
+let arr=[w[2]];
+
+while(arr.length<4){
+
+let r=words[Math.floor(Math.random()*words.length)][2];
+
+if(!arr.includes(r)){
+arr.push(r);
+}
+
+}
+
+
+arr.sort(()=>Math.random()-0.5);
+
+
+options.innerHTML="";
+
+arr.forEach(x=>{
+
+let b=document.createElement("button");
+
+b.innerHTML=x;
+
+b.onclick=()=>check(x);
+
+options.appendChild(b);
+
+});
+
+
+msg.innerHTML="";
+
+}
+
+
+
+function check(a){
+
+let answer=words[index][2];
+
+if(a==answer){
+
+score++;
+combo++;
+
+msg.innerHTML="🔔 叮！正确";
+
+}else{
+
+combo=0;
+
+msg.innerHTML="❌ 嘟嘟 正确："+answer;
+
+}
+
+
+document.getElementById("score").innerHTML=score;
+document.getElementById("combo").innerHTML=combo;
+
+
+setTimeout(()=>{
+
+index++;
+
+if(index>=words.length){
+
+alert("完成！得分："+score);
+
+index=0;
+score=0;
+
+}
+
+load();
+
+},700);
+
+
+}
+
+
+
+function voice(){
+
+let u=new SpeechSynthesisUtterance(words[index][0]);
+
+u.lang="en-US";
+
+speechSynthesis.speak(u);
+
+}
+
+
+
+function remember(x){
+
+localStorage.setItem(
+words[index][0],
+x
+);
+
+}
+
+
+load();
+
+
+</script>
+
+
+</body>
+</html>
